@@ -1,6 +1,7 @@
 import json
 from copy import deepcopy
 from datetime import date, datetime
+from html import escape
 from pathlib import Path
 from uuid import uuid4
 
@@ -48,6 +49,10 @@ def save_data(data):
 
 def money(value):
     return f"Rs. {float(value or 0):,.2f}"
+
+
+def h(value):
+    return escape(str(value or ""))
 
 
 def parse_display_date(value):
@@ -114,9 +119,306 @@ def ensure_state():
         st.session_state.active_user_id = None
 
 
+def inject_css():
+    st.markdown(
+        """
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #020617;
+            --panel: rgba(15, 23, 42, 0.72);
+            --panel-strong: rgba(15, 23, 42, 0.92);
+            --line: rgba(148, 163, 184, 0.18);
+            --muted: #94a3b8;
+            --text: #e2e8f0;
+            --indigo: #818cf8;
+            --cyan: #22d3ee;
+            --emerald: #34d399;
+            --rose: #fb7185;
+            --amber: #fbbf24;
+        }
+
+        html, body, [class*="css"] {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .stApp {
+            color: var(--text);
+            background:
+                radial-gradient(circle at 18% 8%, rgba(34, 211, 238, 0.18), transparent 28rem),
+                radial-gradient(circle at 82% 0%, rgba(129, 140, 248, 0.22), transparent 30rem),
+                linear-gradient(135deg, #020617 0%, #0f172a 56%, #111827 100%);
+        }
+
+        section[data-testid="stSidebar"] {
+            background: rgba(2, 6, 23, 0.82);
+            border-right: 1px solid var(--line);
+        }
+
+        .block-container {
+            padding-top: 2.2rem;
+            padding-bottom: 3rem;
+        }
+
+        h1, h2, h3 {
+            letter-spacing: 0;
+        }
+
+        div[data-testid="stMetric"],
+        div[data-testid="stForm"],
+        div[data-testid="stVerticalBlockBorderWrapper"] {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(18px);
+        }
+
+        div[data-testid="stMetric"] {
+            padding: 1rem 1.1rem;
+        }
+
+        div[data-testid="stMetricLabel"] p {
+            color: var(--muted);
+            font-size: 0.74rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        div[data-testid="stMetricValue"] {
+            color: white;
+            font-weight: 800;
+        }
+
+        div[data-testid="stForm"] {
+            padding: 1rem 1rem 1.2rem;
+        }
+
+        .stTextInput input,
+        .stNumberInput input,
+        .stDateInput input,
+        .stSelectbox div[data-baseweb="select"] > div {
+            background: rgba(2, 6, 23, 0.72);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            color: var(--text);
+        }
+
+        .stButton > button,
+        .stFormSubmitButton > button {
+            border: 0;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            font-weight: 800;
+            box-shadow: 0 12px 30px rgba(79, 70, 229, 0.28);
+        }
+
+        .stButton > button:hover,
+        .stFormSubmitButton > button:hover {
+            border: 0;
+            color: white;
+            filter: brightness(1.08);
+        }
+
+        .moneybook-hero {
+            padding: 1.4rem 1.6rem;
+            margin-bottom: 1.1rem;
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            background:
+                linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.68)),
+                radial-gradient(circle at 92% 8%, rgba(34, 211, 238, 0.14), transparent 18rem);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+        }
+
+        .moneybook-kicker {
+            color: var(--cyan);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+
+        .moneybook-title {
+            color: white;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 900;
+            line-height: 1.05;
+            margin: 0;
+        }
+
+        .moneybook-subtitle {
+            color: var(--muted);
+            margin-top: 0.6rem;
+            max-width: 54rem;
+        }
+
+        .metric-card,
+        .tx-card,
+        .account-card {
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 1rem;
+            background: var(--panel);
+            box-shadow: 0 20px 55px rgba(0, 0, 0, 0.22);
+            min-height: 112px;
+        }
+
+        .metric-label,
+        .tx-meta,
+        .account-type {
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .metric-value {
+            color: white;
+            font-size: 1.7rem;
+            font-weight: 900;
+            margin-top: 0.5rem;
+        }
+
+        .metric-small {
+            color: var(--muted);
+            font-size: 0.82rem;
+            margin-top: 0.2rem;
+        }
+
+        .tone-emerald { border-color: rgba(52, 211, 153, 0.3); }
+        .tone-emerald .metric-value, .amount-positive { color: var(--emerald); }
+        .tone-rose { border-color: rgba(251, 113, 133, 0.3); }
+        .tone-rose .metric-value, .amount-negative { color: var(--rose); }
+        .tone-amber { border-color: rgba(251, 191, 36, 0.3); }
+        .tone-amber .metric-value { color: var(--amber); }
+        .tone-indigo { border-color: rgba(129, 140, 248, 0.35); }
+        .tone-indigo .metric-value { color: var(--indigo); }
+
+        .tx-card {
+            min-height: auto;
+            margin-bottom: 0.7rem;
+        }
+
+        .tx-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .tx-title,
+        .account-name {
+            color: white;
+            font-weight: 850;
+            font-size: 1rem;
+        }
+
+        .tx-pill {
+            display: inline-flex;
+            margin-top: 0.55rem;
+            padding: 0.22rem 0.55rem;
+            border-radius: 999px;
+            background: rgba(129, 140, 248, 0.12);
+            color: #c4b5fd;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .tx-amount {
+            font-size: 1.08rem;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .account-card {
+            min-height: 122px;
+        }
+
+        .account-balance {
+            color: white;
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-top: 0.5rem;
+        }
+
+        .auth-shell {
+            max-width: 760px;
+            margin: 1rem auto;
+            text-align: center;
+        }
+
+        @media (max-width: 700px) {
+            .block-container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .tx-row {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_hero(title, subtitle, kicker="MoneyBook"):
+    st.markdown(
+        f"""
+        <div class="moneybook-hero">
+            <div class="moneybook-kicker">{h(kicker)}</div>
+            <h1 class="moneybook-title">{h(title)}</h1>
+            <div class="moneybook-subtitle">{h(subtitle)}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_metric_card(label, value, helper="", tone="indigo"):
+    st.markdown(
+        f"""
+        <div class="metric-card tone-{tone}">
+            <div class="metric-label">{h(label)}</div>
+            <div class="metric-value">{h(value)}</div>
+            <div class="metric-small">{h(helper)}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_account_card(account):
+    st.markdown(
+        f"""
+        <div class="account-card">
+            <div class="account-name">{h(account.get('name', 'Account'))}</div>
+            <div class="account-type">{h(account.get('type', 'Primary'))}</div>
+            <div class="account-balance">{h(money(account.get('balance', 0)))}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def render_auth():
-    st.title("MoneyBook")
-    st.caption("Personal finance, lending, borrowing, savings, and account tracking.")
+    st.markdown('<div class="auth-shell">', unsafe_allow_html=True)
+    render_hero(
+        "MoneyBook",
+        "Track accounts, expenses, savings, lending, and borrowing from one calm dashboard.",
+        "Personal Ledger",
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
 
     tab_login, tab_register, tab_guest = st.tabs(["Login", "Create profile", "Guest"])
 
@@ -201,6 +503,10 @@ def render_sidebar(user):
 
 
 def render_dashboard(user):
+    render_hero(
+        "Dashboard",
+        f"Welcome back, {user.get('name', 'there')}. Here is your money snapshot.",
+    )
     transactions = user.get("transactions", [])
     accounts = user.get("accounts", [])
     selected_month = st.selectbox(
@@ -219,25 +525,38 @@ def render_dashboard(user):
     month_saved = calc_total(monthly, lambda tx: tx.get("type") in {"saving", "investment"})
 
     cols = st.columns(4)
-    cols[0].metric("To receive", money(calc_total(transactions, lambda tx: tx.get("type") == "lent" and tx.get("status") == "pending")))
-    cols[1].metric("To pay", money(calc_total(transactions, lambda tx: tx.get("type") == "borrowed" and tx.get("status") == "pending")))
-    cols[2].metric("Spent this month", money(month_spent), money(total_spent))
-    cols[3].metric("Saved/invested this month", money(month_saved), money(total_saved))
+    with cols[0]:
+        render_metric_card(
+            "To receive",
+            money(calc_total(transactions, lambda tx: tx.get("type") == "lent" and tx.get("status") == "pending")),
+            "Pending lent amount",
+            "emerald",
+        )
+    with cols[1]:
+        render_metric_card(
+            "To pay",
+            money(calc_total(transactions, lambda tx: tx.get("type") == "borrowed" and tx.get("status") == "pending")),
+            "Pending borrowed amount",
+            "rose",
+        )
+    with cols[2]:
+        render_metric_card("Spent this month", money(month_spent), f"All time {money(total_spent)}", "amber")
+    with cols[3]:
+        render_metric_card("Saved / invested", money(month_saved), f"All time {money(total_saved)}", "indigo")
 
     st.subheader("Salary overview")
     salary_cols = st.columns(2)
-    salary_cols[0].metric("All-time salary", money(total_salary))
-    salary_cols[1].metric("Selected month salary", money(month_salary))
+    with salary_cols[0]:
+        render_metric_card("All-time salary", money(total_salary), "Total salary income", "indigo")
+    with salary_cols[1]:
+        render_metric_card("Selected month salary", money(month_salary), selected_month, "emerald")
 
     st.subheader("Account balances")
     if accounts:
         account_cols = st.columns(min(4, len(accounts)))
         for index, account in enumerate(accounts):
             with account_cols[index % len(account_cols)]:
-                st.metric(
-                    f"{account.get('name', 'Account')} ({account.get('type', 'Primary')})",
-                    money(account.get("balance", 0)),
-                )
+                render_account_card(account)
     else:
         st.info("No accounts configured yet.")
 
@@ -291,14 +610,29 @@ def render_transaction_table(user, transactions, compact=False):
 
     for tx in transactions:
         amount_prefix = "+" if tx.get("type") in {"lent", "salary", "saving"} else "-"
+        amount_class = "amount-positive" if amount_prefix == "+" else "amount-negative"
         with st.container(border=True):
-            cols = st.columns([3, 2, 2, 2, 2] if not compact else [4, 2, 2])
-            cols[0].markdown(f"**{tx.get('name', 'Untitled')}**")
-            cols[0].caption(tx.get("reason") or tx.get("date", ""))
-            cols[1].write(TRANSACTION_TYPES.get(tx.get("type"), tx.get("type", "")))
-            cols[2].write(f"{amount_prefix}{money(tx.get('amount', 0))}")
+            st.markdown(
+                f"""
+                <div class="tx-card">
+                    <div class="tx-row">
+                        <div>
+                            <div class="tx-title">{h(tx.get('name', 'Untitled'))}</div>
+                            <div class="tx-meta">{h(tx.get('reason') or tx.get('date', ''))}</div>
+                            <div class="tx-pill">{h(TRANSACTION_TYPES.get(tx.get('type'), tx.get('type', '')))}</div>
+                        </div>
+                        <div class="tx-amount {amount_class}">{h(amount_prefix + money(tx.get('amount', 0)))}</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
             if compact:
                 continue
+            cols = st.columns([3, 2, 2, 2, 2] if not compact else [4, 2, 2])
+            cols[0].caption(tx.get("date", ""))
+            cols[1].caption(tx.get("bankName", ""))
+            cols[2].caption(tx.get("status", "pending").title())
             cols[3].write(tx.get("status", "pending").title())
             action = cols[4].selectbox(
                 "Action",
@@ -349,7 +683,7 @@ def delete_transaction(user, tx_id):
 
 
 def render_transactions(user):
-    st.header("Transactions")
+    render_hero("Transactions", "Add entries and manage settlement status from one place.")
     render_transaction_form(user)
     st.divider()
 
@@ -365,7 +699,7 @@ def render_transactions(user):
 
 
 def render_accounts(user):
-    st.header("Accounts")
+    render_hero("Accounts", "Create accounts, update balances, and keep each money source visible.")
     accounts = user.setdefault("accounts", [])
 
     with st.form("account_form", clear_on_submit=True):
@@ -406,7 +740,7 @@ def render_accounts(user):
 
 
 def render_assistant(user):
-    st.header("Assistant")
+    render_hero("Assistant", "Ask quick questions about your spending, savings, and balances.")
     query = st.text_input("Ask about your finances")
     transactions = user.get("transactions", [])
     if query:
@@ -432,7 +766,7 @@ def render_assistant(user):
 
 
 def render_settings(user):
-    st.header("Settings")
+    render_hero("Settings", "Manage this profile and deployment-safe data options.")
     if user.get("isGuest"):
         st.info("Guest profiles are temporary and are not saved to disk.")
     else:
@@ -454,6 +788,7 @@ def render_settings(user):
 
 def main():
     ensure_state()
+    inject_css()
     user = current_user()
     if user is None:
         render_auth()
